@@ -1,0 +1,152 @@
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: fleetman-webapp-queue
+#   labels:
+#     app: fleetman-webapp-queue
+# spec: 
+#   containers:
+#   - name: webapp-queue
+#     image: richardchesterwood/k8s-fleetman-queue:release1
+
+# ---
+
+# apiVersion: apps/v1
+# kind: ReplicaSet
+# #replica set naming
+# metadata:
+#   name: webapp-queue
+#   labels:
+#     app: webapp-queue
+# #replica set configurations
+# spec:
+#   replicas: 2    #define the number of desired replicas
+#   selector:      #selects the pod in which this replica to be applied
+#     matchLabels: #pods to be selected
+#       app: webapp-queue #acual pod
+#   template:      #pod template and its metadata
+#    metadata:
+#      name: fleetman-replicaset
+#      labels:
+#        app: webapp-queue
+#    spec:
+#      containers:
+#      - name: webapp-queue
+#        image: richardchesterwood/k8s-fleetman-webapp-angular:release0-5
+
+# --- Image for the queue -------------- to release 2 version 
+apiVersion: apps/v1
+kind: Deployment
+#replica set naming
+metadata:
+  name: queue
+#replica set configurations
+spec:
+  replicas: 2    #define the number of desired replicas
+  selector:      #selects the pod in which this replica to be applied
+    matchLabels: #pods to be selected
+      app: queue #acual pod
+  template:      #pod template and its metadata
+   metadata:
+     labels:
+       app: queue
+   spec:
+     containers:
+     - name: webapp-queue
+       image: richardchesterwood/k8s-fleetman-queue:release2
+
+---
+# ---- to release 2 version 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: position-simulator
+spec:
+  selector:
+    matchLabels:
+      app: position-simulator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: position-simulator
+    spec:
+      containers:
+      - name: position-simulator
+        image: richardchesterwood/k8s-fleetman-position-simulator:release2
+        env:
+        - name: SPRING_PROFILES_ACTIVE  
+          value: production-microservice
+
+---
+# ---- to release 3 updated version 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: position-tracker
+spec:
+  selector:
+    matchLabels:
+      app: position-tracker
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: position-tracker
+    spec:
+      containers:
+      - name: position-tracker
+        image: richardchesterwood/k8s-fleetman-position-tracker:release3
+        env:
+        - name: SPRING_PROFILES_ACTIVE  
+          value: production-microservice
+
+---
+# ---- to release 2 version 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: richardchesterwood/k8s-fleetman-api-gateway:release2
+        env:
+        - name: SPRING_PROFILES_ACTIVE  
+          value: production-microservice
+
+---
+# ---- to release 2 version 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: richardchesterwood/k8s-fleetman-webapp-angular:release2
+        env:
+        - name: SPRING_PROFILES_ACTIVE  
+          value: production-microservice
+
+
+
+

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testmongodb
+spec:
+  selector:
+    matchLabels:
+      app: testmongodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: testmongodb
+    spec:
+      containers:
+      - name: testmongodb
+        image: mongo:latest
+
+---
+
+#we are going to use this service in single pod file now for mongoDB
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-mongodb
+spec:
+  selector:
+    app: testmongodb
+  ports:
+    - name: mongoport
+      port: 27017
+  type: ClusterIP
+  
+
